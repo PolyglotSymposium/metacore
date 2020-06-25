@@ -1,0 +1,1 @@
+(b (s (c (c (c (symbol-eq? [quote pair]) _1) type-of)) type-of) (b (get-field 0) parse))
