@@ -43,9 +43,9 @@ int yyerror(const char *msg) {
 <STRING>[^\\"\n]*                { strbuf = strdup(yytext); }
 <STRING>\"                       { yylval->string = strbuf; strbuf = NULL;
                                    BEGIN 0; return TOKEN_STRING; }
-<STRING>\\                       { yyerror("escape sequences not implemented in strings"); }
-<STRING>\n                       { yyerror("string not terminated before EOL"); }
-<STRING><<EOF>>                  { yyerror("string not terminated before EOF"); }
-.                                { yyerror("invalid character in input stream"); }
+<STRING>\\                       { yyerror("escape sequences not implemented in strings"); return *yytext; }
+<STRING>\n                       { yyerror("string not terminated before EOL"); return *yytext; }
+<STRING><<EOF>>                  { yyerror("string not terminated before EOF"); return *yytext; }
+.                                { yyerror("invalid character in input stream"); return *yytext; }
 
 %%

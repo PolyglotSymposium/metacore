@@ -2,7 +2,6 @@
 #include "SymbolValue.h"
 #include "StructValue.h"
 #include "Eval.h"
-#include "Bool.h"
 #include "Forms.h"
 #include "Error.h"
 

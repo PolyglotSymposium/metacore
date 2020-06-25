@@ -5,13 +5,20 @@
 #include "Primitives.h"
 #include "Str.h"
 #include "Nat.h"
-#include "Bool.h"
 #include "Error.h"
 #include "PrimFun.h"
 #include "Pair.h"
 #include "StructValue.h"
 #include "SymbolValue.h"
 #include "StructParser.h"
+
+static Struct* kcomb(Struct* x, Struct* _) {
+  return x;
+}
+
+static Struct* ckcomb(Struct* _, Struct* x) {
+  return x;
+}
 
 static Struct* type_of(Struct* x) {
   Struct* t = NULL;
@@ -137,22 +144,6 @@ static Struct* mult(Struct* x, Struct* y) {
   return v;
 }
 
-static Struct* boolEq(Struct* x, Struct* y) {
-  Struct* v = NULL;
-  v = require(BOOL_SYMBOL, x);
-  if (v == NULL) {
-    v = require(BOOL_SYMBOL, y);
-    if (v == NULL) {
-      if (x == y) {
-        v = TRUE_STRUCT;
-      } else {
-        v = FALSE_STRUCT;
-      }
-    }
-  }
-  return v;
-}
-
 static Struct* symbolEq(Struct* x, Struct* y) {
   Struct* v = NULL;
   v = require(SYMBOL_SYMBOL, x);
@@ -160,9 +151,9 @@ static Struct* symbolEq(Struct* x, Struct* y) {
     v = require(SYMBOL_SYMBOL, y);
     if (v == NULL) {
       if (asSymbol(x) == asSymbol(y)) {
-        v = TRUE_STRUCT;
+        v = newPrimFun2(kcomb);
       } else {
-        v = FALSE_STRUCT;
+        v = newPrimFun2(ckcomb);
       }
     }
   }
@@ -176,9 +167,9 @@ static Struct* strEq(Struct* x, Struct* y) {
     v = require(STR_SYMBOL, y);
     if (v == NULL) {
       if (strcmp(asStr(x), asStr(y))) {
-        v = FALSE_STRUCT;
+        v = newPrimFun2(ckcomb);
       } else {
-        v = TRUE_STRUCT; // strcmp returns 0 if equal
+        v = newPrimFun2(kcomb); // strcmp returns 0 if equal
       }
     }
   }
@@ -192,17 +183,13 @@ static Struct* natEq(Struct* x, Struct* y) {
     v = require(NAT_SYMBOL, y);
     if (v == NULL) {
       if (asNat(x) == asNat(y)) {
-        v = TRUE_STRUCT;
+        v = newPrimFun2(kcomb);
       } else {
-        v = FALSE_STRUCT;
+        v = newPrimFun2(ckcomb);
       }
     }
   }
   return v;
-}
-
-static Struct* kcomb(Struct* x, Struct* _) {
-  return x;
 }
 
 static Struct* icomb(Struct* x) { return x; }
@@ -254,7 +241,6 @@ void printValue(FILE* stream, Struct* e) {
   switch (get_tag(e)) {
   case NAT_SYMBOL     : printNat(stream, e)               ; break;
   case STR_SYMBOL     : printStr(stream, e)               ; break;
-  case BOOL_SYMBOL    : printBool(stream, e)              ; break;
   case ERROR_SYMBOL   : printError(stream, e)             ; break;
   case PRIMFUN1_SYMBOL:
   case PRIMFUN2_SYMBOL:
@@ -298,24 +284,24 @@ Struct* matchPrim(Symbol name) {
   case 18                  /* s           */: p = newPrimFun3(scomb      ); break;
   case 27                  /* +           */: p = newPrimFun2(add        ); break;
   case 29                  /* *           */: p = newPrimFun2(mult       ); break;
+  case 322                 /* ck          */: p = newPrimFun2(ckcomb     ); break;
   //case 98449             /* read        */: p =                         ; break;
   //case 361124            /* eval        */: p =                         ; break;
+  case 152115              /* true        */: p = newPrimFun2(kcomb      ); break;
   case 735474              /* show        */: p = newPrimFun1(show       ); break;
+  case 4795397             /* false       */: p = newPrimFun2(ckcomb     ); break;
   case 4801551             /* parse       */: p = newPrimFun1(parse      ); break;
   case 19543500            /* monus       */: p = newPrimFun2(monus      ); break;
   case 183310355           /* tag-of      */: p = newPrimFun1(tag_of     ); break;
   case 5865881363          /* type-of     */: p = newPrimFun1(type_of    ); break;
   case 32754191373         /* nat-eq?     */: p = newPrimFun2(natEq      ); break;
   case 32754189938         /* str-eq?     */: p = newPrimFun2(strEq      ); break;
-  case 1048133876161       /* bool-eq?    */: p = newPrimFun2(boolEq     ); break;
   case 3681061522566       /* get-field   */: p = newPrimFun2(field      ); break;
   case 1073289088774930    /* symbol-eq?  */: p = newPrimFun2(symbolEq   ); break;
   case 5392652055496306    /* struct-size */: p = newPrimFun1(struct_size); break;
   case 1152921504606846976 /* _1          */: p = newPrimFun1(fst        ); break;
   case 2305843009213693952 /* _2          */: p = newPrimFun1(snd        ); break;
   case PAIR_SYMBOL                          : p = newPrimFun2(pair       ); break;
-  case TRUE_SYMBOL                          : p = TRUE_STRUCT             ; break;
-  case FALSE_SYMBOL                         : p = FALSE_STRUCT            ; break;
   default                                   :                             ; break;
   }
   return p;

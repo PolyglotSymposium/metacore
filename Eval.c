@@ -2,7 +2,6 @@
 #include "Primitives.h"
 #include "Str.h"
 #include "Nat.h"
-#include "Bool.h"
 #include "Error.h"
 #include "PrimFun.h"
 #include "Pair.h"
@@ -19,7 +18,6 @@ Struct* eval(Struct* e) {
   switch (get_tag(e)) {
   case NAT_SYMBOL     :
   case STR_SYMBOL     :
-  case BOOL_SYMBOL    :
   case PRIMFUN1_SYMBOL:
   case PRIMFUN2_SYMBOL:
   case CLOHALF_SYMBOL :
