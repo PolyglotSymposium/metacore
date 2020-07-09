@@ -3,7 +3,8 @@
 
 #include <stdio.h>
 #include "Struct.h"
+#include "Map.h"
 
-Struct* eval(Struct*);
+Struct* evalTopLevel(Map*, Map*, Struct*);
 
 #endif

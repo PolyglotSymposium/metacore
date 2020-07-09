@@ -46,3 +46,19 @@ Struct* matchForm(Struct* form) {
   }
   return x;
 }
+
+Map* define(Map* env, Struct* form) {
+  assert(get_size(form) == 2);
+  Symbol name = (Symbol)get_field(form, 0);
+  Struct* value = (Struct*)get_field(form, 1);
+  return insert(name, value, env);
+}
+
+Map* matchTopLevel(Map* env, Struct* form) {
+  Map* m = NULL;
+  switch (get_tag(form)) {
+  case 148116611 /* define */: m = define(env, form); break;
+  default                    : m = NULL             ; break;
+  }
+  return m;
+}

@@ -12,7 +12,27 @@
 #include <assert.h>
 #include <stdio.h>
 
-Struct* eval(Struct* e) {
+Struct* eval(Map*, Struct*);
+
+Struct* evalByLookup(Map* env, Struct* e) {
+  Symbol s = asSymbol(e);
+  Struct* v = matchPrim(s);
+  if (v == NULL) {
+    v = lookup(s, env);
+    if (v == NULL) {
+      v = undefined(asSymbol(e));
+    }
+  }
+  return v;
+}
+
+Struct* evalByApply(Map* env, Struct* e) {
+  Struct* v = apply(eval(env, asFirst(e)), eval(env, asSecond(e)));
+  assert(v != NULL);
+  return v;
+}
+
+Struct* eval(Map* env, Struct* e) {
   assert(e != NULL);
   Struct* v = NULL;
   switch (get_tag(e)) {
@@ -24,21 +44,10 @@ Struct* eval(Struct* e) {
   case PRIMFUN3_SYMBOL:
   case CLOTHIRD_SYMBOL:
   case TWOTHIRD_SYMBOL:
-  case ERROR_SYMBOL   :
-    v = e;
-    break;
-  case PAIR_SYMBOL    :
-    v = apply(eval(asFirst(e)), eval(asSecond(e)));
-    assert(v != NULL);
-    break;
-  case STRUCT_SYMBOL  :
-    v = matchForm(dequote(e));
-    break;
-  case SYMBOL_SYMBOL  :
-    v = matchPrim(asSymbol(e));
-    if (v == NULL) { v = undefined(asSymbol(e)); }
-    assert(v != NULL);
-    break;
+  case ERROR_SYMBOL   : v = e                    ; break;
+  case PAIR_SYMBOL    : v = evalByApply(env, e)  ; break;
+  case STRUCT_SYMBOL  : v = matchForm(dequote(e)); break;
+  case SYMBOL_SYMBOL  : v = evalByLookup(env, e) ; break;
   default             :
     fprintf(stderr, "Unknown expression type: %s\n", decompressSymbol(get_tag(e)));
     int UNHANDLED_EXPR_TAG = 0;
@@ -47,3 +56,17 @@ Struct* eval(Struct* e) {
   return v;
 }
 
+
+Struct* evalTopLevel(Map* env, Map* envOut, Struct* e) {
+  assert(envOut == NULL);
+  Struct* out = NULL;
+  switch (get_tag(e)) {
+  case STRUCT_SYMBOL: envOut = matchTopLevel(env, dequote(e)); break;
+  default:                                                     break;
+  }
+  if (envOut == NULL) {
+    out = eval(env, e);
+    envOut = env;
+  }
+  return out;
+}
