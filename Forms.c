@@ -49,7 +49,9 @@ Struct* matchForm(Struct* form) {
 
 Map* define(Map* env, Struct* form) {
   assert(get_size(form) == 2);
-  Symbol name = (Symbol)get_field(form, 0);
+  Struct* nameShouldBeSymbol = (Struct*)get_field(form, 0);
+  assert(get_tag(nameShouldBeSymbol) == SYMBOL_SYMBOL);
+  Symbol name = asSymbol(nameShouldBeSymbol);
   Struct* value = (Struct*)get_field(form, 1);
   return insert(name, value, env);
 }
