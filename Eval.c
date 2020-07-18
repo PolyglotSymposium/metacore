@@ -18,7 +18,7 @@ Struct* evalByLookup(Map* env, Struct* e) {
   Symbol s = asSymbol(e);
   Struct* v = matchPrim(s);
   if (v == NULL) {
-    v = lookup(s, env);
+    v = eval(env, lookup(s, env));
     if (v == NULL) {
       v = undefined(s);
     }

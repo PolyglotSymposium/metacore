@@ -1,1 +1,3 @@
-(b (s (c (c (c (symbol-eq? [quote pair]) _1) type-of)) type-of) (b (get-field 0) parse))
+[define is-id? (s symbol-eq? (get-field 0) (get-field 1))]
+[define lambda? (b (symbol-eq? [quote lambda]) tag-of)]
+[define abstr-elim (s lambda? is-id? hard-parse [quote i])]
