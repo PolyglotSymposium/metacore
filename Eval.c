@@ -20,7 +20,7 @@ Struct* evalByLookup(Map* env, Struct* e) {
   if (v == NULL) {
     v = lookup(s, env);
     if (v == NULL) {
-      v = undefined(asSymbol(e));
+      v = undefined(s);
     }
   }
   return v;

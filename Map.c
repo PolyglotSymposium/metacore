@@ -17,8 +17,7 @@ Map* insert(Symbol key, Struct* value, Map* map) {
     m->key = key;
     m->value = value;
     m->after = NULL;
-  }
-  if (key < map->key) {
+  } else if (key < map->key) {
     m = (Map*)GC_MALLOC(sizeof(Map));
     m->before = insert(key, value, map->before);
     m->key = map->key;
