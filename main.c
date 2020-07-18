@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
       fprintf(stderr, "Parse error\n");
     } else {
       Map* envOut = NULL;
-      e = evalTopLevel(env, envOut, e);
+      e = evalTopLevel(env, &envOut, e);
       if (e != NULL) { printValue(stdout, e); printf("\n"); }
     }
   } else {
@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
           fprintf(stderr, "Parse error\n");
         } else {
           Map* envOut = NULL;
-          e = evalTopLevel(env, envOut, e);
+          e = evalTopLevel(env, &envOut, e);
           if (e != NULL) { printValue(stdout, e); printf("\n"); }
           env = envOut;
         }

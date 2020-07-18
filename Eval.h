@@ -5,6 +5,6 @@
 #include "Struct.h"
 #include "Map.h"
 
-Struct* evalTopLevel(Map*, Map*, Struct*);
+Struct* evalTopLevel(Map*, Map**, Struct*);
 
 #endif

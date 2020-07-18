@@ -57,16 +57,16 @@ Struct* eval(Map* env, Struct* e) {
 }
 
 
-Struct* evalTopLevel(Map* env, Map* envOut, Struct* e) {
-  assert(envOut == NULL);
+Struct* evalTopLevel(Map* env, Map** envOut, Struct* e) {
+  assert(*envOut == NULL);
   Struct* out = NULL;
   switch (get_tag(e)) {
-  case STRUCT_SYMBOL: envOut = matchTopLevel(env, dequote(e)); break;
+  case STRUCT_SYMBOL: *envOut = matchTopLevel(env, dequote(e)); break;
   default:                                                     break;
   }
-  if (envOut == NULL) {
+  if (*envOut == NULL) {
     out = eval(env, e);
-    envOut = env;
+    *envOut = env;
   }
   return out;
 }
