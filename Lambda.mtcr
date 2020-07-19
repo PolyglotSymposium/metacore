@@ -1,3 +1,26 @@
-[define is-id? (s symbol-eq? (get-field 0) (get-field 1))]
-[define lambda? (b (symbol-eq? [quote lambda]) tag-of)]
-[define abstr-elim (s lambda? is-id? hard-parse [quote i])]
+"hard-parse: String -> Any"
+[define hard-parse (b (get-field 0) parse)]
+
+"one-two-same?: Struct -> Boolean"
+[define one-two-same (s (b symbol-eq? (get-field 0)) (get-field 1))]
+
+"lambda-tag?: Struct -> Boolean"
+[define lambda-tag? (b (symbol-eq? [quote lambda]) tag-of)]
+
+"lambda?: Struct -> Boolean"
+[define lambda? (s lambda-tag? (b (nat-eq? 2) struct-size))]
+
+"is-id?: Struct -> Boolean"
+[define is-id? (s lambda? one-two-same)]
+
+"forall x, y : a -> b. forall pred. a -> Boolean. (c (c pred x) y) : a -> a -> b"
+"forall x, y : a -> b. forall pred. a -> Boolean. (s (c (c pred x) y) i) : a -> b"
+
+"id-to-i: Struct -> (a -> Struct) -> a -> Struct"
+[define id-to-i (s (c (c is-id? (k [quote i])) i))]
+
+[define rest-of-alg i]
+
+"abstr-elim: String -> Any"
+[define abstr-elim (b (id-to-i rest-of-alg) hard-parse)]
+(abstr-elim "[lambda x x]")
