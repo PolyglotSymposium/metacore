@@ -17,7 +17,7 @@
 "forall x, y : a -> b. forall pred. a -> Boolean. (s (c (c pred x) y) i) : a -> b"
 
 "id-to-i: Struct -> (a -> Struct) -> a -> Struct"
-[define id-to-i (s (c (c is-id? (k [quote i])) i))]
+[define id-to-i (b (c s i) (c (c is-id? (k [quote i]))))]
 
 [define rest-of-alg i]
 
