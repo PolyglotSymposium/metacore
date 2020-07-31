@@ -3,6 +3,18 @@
 #include "StructParser.h"
 #include <assert.h>
 #include <string.h>
+#include <ctype.h>
+
+bool non_empty_str(const char* const s) {
+  bool b = false;
+  const char* c = s;
+  while (*c) {
+    b = !isspace(*c);
+    if (b) break;
+    c++;
+  }
+  return b;
+}
 
 int main(int argc, char* argv[])
 {
@@ -24,15 +36,17 @@ int main(int argc, char* argv[])
       size_t len = 0;
       getline(&code, &len, stdin); assert(code != NULL);
       if (strcmp(",q\n", code)) {
-        Struct* e = chars_to_struct(code);
-        code = NULL;
-        if (e == NULL) {
-          fprintf(stderr, "Parse error\n");
-        } else {
-          Map* envOut = NULL;
-          e = evalTopLevel(env, &envOut, e);
-          if (e != NULL) { printValue(stdout, e); printf("\n"); }
-          env = envOut;
+        if (non_empty_str(code)) {
+          Struct* e = chars_to_struct(code);
+          code = NULL;
+          if (e == NULL) {
+            fprintf(stderr, "Parse error\n");
+          } else {
+            Map* envOut = NULL;
+            e = evalTopLevel(env, &envOut, e);
+            if (e != NULL) { printValue(stdout, e); printf("\n"); }
+            env = envOut;
+          }
         }
       } else {
         cont = false;
