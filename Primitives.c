@@ -213,6 +213,18 @@ static Struct* scomb(Struct* f, Struct* g, Struct* x) {
   return v;
 }
 
+/* Not a standard combinator AFAIK; x = (c s) */
+static Struct* xcomb(Struct* g, Struct* f, Struct* x) {
+  Struct* v = apply(f, x);
+  if (get_tag(v) != ERROR_SYMBOL) {
+    Struct* v2 = apply(g, x);
+    if (get_tag(v2) != ERROR_SYMBOL) {
+      v = apply(v, v2);
+    }
+  }
+  return v;
+}
+
 static Struct* ccomb(Struct* f, Struct* x, Struct* y) {
   Struct* v = apply(f, y);
   if (get_tag(v) != ERROR_SYMBOL) {
@@ -282,6 +294,7 @@ Struct* matchPrim(Symbol name) {
   case 8                   /* i           */: p = newPrimFun1(icomb      ); break;
   case 10                  /* k           */: p = newPrimFun2(kcomb      ); break;
   case 18                  /* s           */: p = newPrimFun3(scomb      ); break;
+  case 23                  /* x           */: p = newPrimFun3(xcomb      ); break;
   case 27                  /* +           */: p = newPrimFun2(add        ); break;
   case 29                  /* *           */: p = newPrimFun2(mult       ); break;
   case 322                 /* ck          */: p = newPrimFun2(ckcomb     ); break;
