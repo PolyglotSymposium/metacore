@@ -10,17 +10,20 @@
 "lambda?: Struct -> Boolean"
 [define lambda? (s lambda-tag? (b (nat-eq? 2) struct-size))]
 
+"pair?: Struct -> Boolean"
+[define pair? (b (symbol-eq? [quote pair]) type-of)]
+
 "is-id?: Struct -> Boolean"
 [define is-id? (s lambda? one-two-same)]
 
-"forall x, y : a -> b. forall pred. a -> Boolean. (c (c pred x) y) : a -> a -> b"
-"forall x, y : a -> b. forall pred. a -> Boolean. (s (c (c pred x) y) i) : a -> b"
+"xi: (a -> a -> b) -> a -> b"
+[define xi (x i)]
 
-"id-to-i: Struct -> (a -> Struct) -> a -> Struct"
-[define id-to-i (b (c s i) (c (c is-id? (k [quote i]))))]
+"id-to-i: (Struct -> Struct) -> Struct -> Struct"
+[define id-to-i (b xi (c (c is-id? (k [quote i]))))]
 
 [define rest-of-alg i]
 
 "abstr-elim: String -> Any"
 [define abstr-elim (b (id-to-i rest-of-alg) hard-parse)]
-(abstr-elim "[lambda x x]")
+(abstr-elim "[lambda x y]")
