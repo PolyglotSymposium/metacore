@@ -1,23 +1,29 @@
+"xi: (a -> a -> b) -> a -> b"
+[define xi (x i)]
+
+"and : Boolean -> Boolean -> Boolean"
+[define and (b b (b s c))]
+
+"and-pred : Predicate -> Predicate -> Predicate"
+[define and-pred (b s (b and))]
+
 "hard-parse: String -> Any"
 [define hard-parse (b (get-field 0) parse)]
 
 "one-two-same?: Struct -> Boolean"
-[define one-two-same (s (b symbol-eq? (get-field 0)) (get-field 1))]
+[define one-two-same? (s (b symbol-eq? (get-field 0)) (get-field 1))]
 
 "lambda-tag?: Struct -> Boolean"
 [define lambda-tag? (b (symbol-eq? [quote lambda]) tag-of)]
 
 "lambda?: Struct -> Boolean"
-[define lambda? (s lambda-tag? (b (nat-eq? 2) struct-size))]
+[define lambda? (and-pred lambda-tag? (b (nat-eq? 2) struct-size))]
 
 "pair?: Struct -> Boolean"
 [define pair? (b (symbol-eq? [quote pair]) type-of)]
 
 "is-id?: Struct -> Boolean"
-[define is-id? (s lambda? one-two-same)]
-
-"xi: (a -> a -> b) -> a -> b"
-[define xi (x i)]
+[define is-id? (and-pred lambda? one-two-same?)]
 
 "id-to-i: (Struct -> Struct) -> Struct -> Struct"
 [define id-to-i (b xi (c (c is-id? (k [quote i]))))]
@@ -26,4 +32,6 @@
 
 "abstr-elim: String -> Any"
 [define abstr-elim (b (id-to-i rest-of-alg) hard-parse)]
+
 (abstr-elim "[lambda x y]")
+(abstr-elim "[lambda x x]")
