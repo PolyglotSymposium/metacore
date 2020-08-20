@@ -1,37 +1,48 @@
-"xi: (a -> a -> b) -> a -> b"
+"xi : (a -> a -> b) -> a -> b"
 [define xi (x i)]
 
-"and : Boolean -> Boolean -> Boolean"
-[define and (b b (b s c))]
+"pass : a -> (a -> b) -> b"
+[define pass (c (s (k i)))]
 
 "and-pred : Predicate -> Predicate -> Predicate"
-[define and-pred (b s (b and))]
+[define and-pred (b (b (s pass)) (b (b (pass (k false))) (b (b c) c)))]
 
-"hard-parse: String -> Any"
+"if-pred : Predicate -> (Struct -> Struct) -> (Struct -> Struct) -> Struct -> Struct"
+[define if-pred (b (b (b xi)) (b (b c) c))]
+
+"hard-parse : String -> Any"
 [define hard-parse (b (get-field 0) parse)]
 
-"one-two-same?: Struct -> Boolean"
+"one-two-same? : Struct -> Boolean"
 [define one-two-same? (s (b symbol-eq? (get-field 0)) (get-field 1))]
 
-"lambda-tag?: Struct -> Boolean"
+"lambda-tag? : Struct -> Boolean"
 [define lambda-tag? (b (symbol-eq? [quote lambda]) tag-of)]
 
-"lambda?: Struct -> Boolean"
+"lambda? : Struct -> Boolean"
 [define lambda? (and-pred lambda-tag? (b (nat-eq? 2) struct-size))]
 
-"pair?: Struct -> Boolean"
+"pair? : Struct -> Boolean"
 [define pair? (b (symbol-eq? [quote pair]) type-of)]
 
-"is-id?: Struct -> Boolean"
+"is-id? : Struct -> Boolean"
 [define is-id? (and-pred lambda? one-two-same?)]
 
-"id-to-i: (Struct -> Struct) -> Struct -> Struct"
-[define id-to-i (b xi (c (c is-id? (k [quote i]))))]
+"rec-ap : Struct -> Struct"
+"[define rec-ap (s (b pair (b abstr-elim _1)) (b abstr-elim _2))]"
+[define rec-ap (s (b pair _1) _2)]
 
-[define rest-of-alg i]
+"ap-to-ap : (Struct -> Struct) -> Struct -> Struct"
+[define ap-to-ap (if-pred pair? rec-ap)]
 
-"abstr-elim: String -> Any"
-[define abstr-elim (b (id-to-i rest-of-alg) hard-parse)]
+"id-to-i : (Struct -> Struct) -> Struct -> Struct"
+[define id-to-i (if-pred is-id? (k [quote i]))]
 
-(abstr-elim "[lambda x y]")
-(abstr-elim "[lambda x x]")
+"abstr-elim : Struct -> Struct"
+[define abstr-elim (id-to-i (ap-to-ap i))]
+
+"parse-+-elim : String -> Any"
+[define parse-+-elim (b abstr-elim hard-parse)]
+
+(parse-+-elim "[lambda x y]")
+(parse-+-elim "([lambda x x] [lambda x x])")
